@@ -1,0 +1,75 @@
+import turtle
+import random
+
+turtleColor1 = ["#D2691E", "#F0E68C", "#C71585"]
+turtleColor2 = ["#808000", "#008B8B", "#000000"]
+
+t1 = turtle.Turtle()
+t2 = turtle.Turtle()
+t2.shape("circle")
+t1.shape("circle")
+t2.penup()
+t1.penup()
+t1.color(random.choice(turtleColor1))
+t2.color(random.choice(turtleColor2))
+
+color = ["#F4A460", "#9400D3", "#FFDAB9", "#3CB371", "#B0E0E6", "#F0FFFF"]
+
+speed = 5
+window = turtle.Screen()
+window.setup(500, 500)
+window.bgcolor(random.choice(color))
+
+game_over = False  # флаг состояния игры
+
+def move_up():
+    if not game_over and t1.ycor() <= 240:
+        t1.sety(t1.ycor() + speed)
+    check_collision()
+
+def move_down():
+    if not game_over and t1.ycor() >= -240:
+        t1.sety(t1.ycor() - speed)
+    check_collision()
+
+def move_left():
+    if not game_over and t1.xcor() >= -240:
+        t1.setx(t1.xcor() - speed)
+    check_collision()
+
+def move_right():
+    if not game_over and t1.xcor() < 240:
+        t1.setx(t1.xcor() + speed)
+    check_collision()
+
+def teleport():
+    if not game_over:
+        randomx = random.randint(-240, 240)
+        randomy = random.randint(-240, 240)
+        t2.hideturtle()
+        t2.goto(randomx, randomy)
+        t2.showturtle()
+        if t1.distance(t2) > 300:
+            window.ontimer(teleport, 3250)
+        if 100 < t1.distance(t2) <= 300:
+            window.ontimer(teleport, 2500)
+        if 50 <= t1.distance(t2) <= 100:
+            window.ontimer(teleport, 2000)
+        if t1.distance(t2) < 50:
+            window.ontimer(teleport, 1500)
+
+def check_collision():
+    global game_over
+    if not game_over and -10 <= t1.distance(t2) <= 10 and t2.isvisible():
+        game_over = True
+        window.textinput('Игра окончена', 'Вы поймали мяч!')
+        window.bye()  # закрываем окно
+
+window.onkeypress(move_left, 'Left')
+window.onkeypress(move_right, 'Right')
+window.onkeypress(move_up, 'Up')
+window.onkeypress(move_down, 'Down')
+
+window.listen()
+teleport()
+window.mainloop()
